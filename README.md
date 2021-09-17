@@ -64,4 +64,5 @@ Depending on which external APIs you are going to use, you need to create API ke
 8. In addition to the coin prices, fetch the price of a random ETF and store it also in a struct.
 9. Add a rows in your Google Sheet with ISN, amount of coins, price, total and a row with the total value of your portfolio.
 10. Instead of saving the result to a CSV, update your Google sheet.
-11. Send out an E-Mail with the coin and ETF overview.
+11. Build your Rust code and move the binary to a server and run it from there.
+12. Send out an E-Mail with the coin and ETF overview and redeploy your application/binary.
