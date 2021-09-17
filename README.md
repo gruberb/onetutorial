@@ -10,10 +10,14 @@ This little project will help you touch many topics around Rust, in a small and 
 * [impl block](https://doc.rust-lang.org/std/keyword.impl.html)
 * [traits](https://doc.rust-lang.org/std/keyword.trait.html)
 * [Error handling](https://doc.rust-lang.org/book/ch09-00-error-handling.html)
+* [Result](https://doc.rust-lang.org/std/result/)
 * [Async](https://doc.rust-lang.org/std/keyword.async.html)
+* [Handling datetimes](https://github.com/chronotope/chrono)
+* [Static values](https://github.com/rust-lang-nursery/lazy-static.rs)
 * [JSON (de)serialization](https://github.com/serde-rs/json)
 * [reading .env variables](https://github.com/dotenv-rs/dotenv)
 * [Integrating CLI commands](https://github.com/clap-rs/clap)
+* [Logging](https://github.com/estk/log4rs)
 * [Reading/writing from/to a file](https://doc.rust-lang.org/std/fs/struct.File.html)
 * [Cross-compiling Rust code](https://blog.rust-lang.org/2016/05/13/rustup.html) 
 * [Sending E-Mails via Rust](https://github.com/vokeio/rust-sendmail)
@@ -47,3 +51,17 @@ Depending on which external APIs you are going to use, you need to create API ke
 1. The [coinmarketcap.com API](https://coinmarketcap.com/api/documentation/v1/) to fetch the latest Crypto prices
 2. The [eodhistoricaldata.com API](https://eodhistoricaldata.com/) to fetch ETF prices 
 
+# The Tutorial 
+
+1. Send a GET request to https://httpbin.org/ip and print the result to the console.
+2. Send out a request to CMC and fetch the price of BTC. 
+3. Read the API key from an .env file.
+4. Get the name, symbol, price and 7day of the BTC and store it in a struct.
+5. Pass the list of currencies to fetch via the CLI. 
+5. Instead of printing the JSON result, store the result in a Vec of currencies.
+6. Save the result in a CSV file.
+7. In case the API returns an error, write it out to a log file and abort the application.
+8. In addition to the coin prices, fetch the price of a random ETF and store it also in a struct.
+9. Add a rows in your Google Sheet with ISN, amount of coins, price, total and a row with the total value of your portfolio.
+10. Instead of saving the result to a CSV, update your Google sheet.
+11. Send out an E-Mail with the coin and ETF overview.
