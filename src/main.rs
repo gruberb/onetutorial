@@ -1,8 +1,11 @@
 use std::collections::HashMap;
 use std::fmt;
+
 use serde::{Serialize, Deserialize};
 use clap::{Arg, App};
 use csv::Writer;
+use log::{error, info, debug};
+use log4rs;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct CMCResponse {
@@ -25,6 +28,46 @@ struct Quote {
     percent_change_7d: f64,
 }
 
+#[derive(Debug)]
+enum OneError {
+    NoAPIKey,
+    CSV(csv::Error),
+    IO(std::io::Error),
+    Reqwest(reqwest::Error),
+}
+
+impl std::error::Error for OneError {}
+
+
+impl fmt::Display for OneError {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    match self {
+      OneError::NoAPIKey => write!(f, "No API key is set via the .env variable."),
+      OneError::CSV(err) => write!(f, "Error while writing the CSV file {}", err),
+      OneError::IO(err) => write!(f, "Error while flushing the file {}", err),
+      OneError::Reqwest(err) => write!(f, "Error while fetching data {}", err),
+    }
+  }
+}
+
+impl From<reqwest::Error> for OneError {
+    fn from(err: reqwest::Error) -> OneError {
+        OneError::Reqwest(err)
+    }
+}
+
+impl From<csv::Error> for OneError {
+    fn from(err: csv::Error) -> OneError {
+        OneError::CSV(err)
+    }
+}
+
+impl From<std::io::Error> for OneError {
+    fn from(err: std::io::Error) -> OneError {
+        OneError::IO(err)
+    }
+}
+
 impl fmt::Display for Currency {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Name: {}, Symbol: {} Price: {} Change(7d): {}%", 
@@ -43,8 +86,9 @@ impl CMCResponse {
 }
  
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-     dotenv::dotenv().ok();
+async fn main() -> Result<(), OneError> {
+    dotenv::dotenv().ok();
+    log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
 
     let matches = App::new("OnteTutorial")
     .version("1.0")
@@ -57,12 +101,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .required(true))
     .get_matches();
 
-    let currencies = matches.value_of("currency_list").expect("No currencies were being passed");  
+    let currency_list = matches.value_of("currency_list").expect("No currencies were being passed");  
     
+    debug!("Querying the following currencies: {:?}", currency_list);
+
     let cmc_pro_api_key = dotenv::var("CMC_PRO_API_KEY").expect("CMC key not set");
+    
+    if cmc_pro_api_key.is_empty() {
+        error!("Empty CMC API KEY provided! Please set one via the .env file!");
+        return Err(OneError::NoAPIKey);
+    }
 
     let mut params = HashMap::new();
-    params.insert("symbol", currencies.to_string());
+    params.insert("symbol", currency_list.to_string());
     
     let client = reqwest::Client::new();
     let resp = client
@@ -82,6 +133,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     wtr.flush()?;
+   
+    info!("Queried {} and wrote CSV file", currency_list);
     
     Ok(())
 }
