@@ -3,9 +3,18 @@ use std::fmt;
 
 use serde::{Serialize, Deserialize};
 use clap::{Arg, App};
-use csv::Writer;
 use log::{error, info, debug};
 use log4rs;
+
+extern crate google_sheets4 as sheets4;
+extern crate yup_oauth2 as oauth2;
+use sheets4::api::ValueRange;
+use sheets4::Error;
+use sheets4::Sheets;
+use yup_oauth2::read_service_account_key;
+
+#[macro_use]
+extern crate lazy_static;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct EODResponse {
@@ -85,12 +94,11 @@ impl fmt::Display for Currency {
     }
 }
 
-impl CMCResponse {
-    fn get_currency(&self, currency: &str) -> Option<&Currency> {
-        self.data.get(currency)
-    }
+lazy_static! {
+    static ref SHEET_ID: &'static str = "1JuF7MpFIkZSixwnmuvgH5KN5iPzcH9Xd05hTL0glya0";
+    static ref SECRET_PATH: &'static str = "secret.json";
 }
- 
+
 #[tokio::main]
 async fn main() -> Result<(), OneError> {
     dotenv::dotenv().ok();
@@ -147,16 +155,73 @@ async fn main() -> Result<(), OneError> {
     
     debug!("Fetched ETF: {}", amundi_etf.close);
 
-    let mut wtr = Writer::from_path("prices.csv")?;
-    wtr.write_record(&["Name", "Symbol", "Price", "7DayChange"])?;
+    let coins = ValueRange {
+        major_dimension: Some("COLUMNS".to_string()),
+        range: Some(format!("{}!{}2:{}4", "Crypto", "C", "C").to_owned()),
+        values: Some(vec![vec![
+            currencies.data.get(&"BTC".to_owned()).unwrap().quote.0.get("USD").unwrap().price.to_string(),
+            currencies.data.get(&"ETH".to_owned()).unwrap().quote.0.get("USD").unwrap().price.to_string(),
+            currencies.data.get(&"DOGE".to_owned()).unwrap().quote.0.get("USD").unwrap().price.to_string(),
+        ]]),
+    };
     
-    for (symbol, currency) in currencies.data.into_iter() {
-        wtr.write_record(&[currency.name, symbol.to_owned(), currency.quote.0.get("USD").unwrap().price.to_string(), currency.quote.0.get("USD").unwrap().percent_change_7d.to_string()])?;
-    }
+    let etfs = ValueRange {
+        major_dimension: Some("COLUMNS".to_string()),
+        range: Some(format!("{}!{}2:{}2", "ETFs", "C", "C").to_owned()),
+        values: Some(vec![vec![
+            amundi_etf.close.to_string(),
+        ]])
+    };
 
-    wtr.flush()?;
+    update_google_sheet(&SECRET_PATH, coins).await;
+    update_google_sheet(&SECRET_PATH, etfs).await;
    
-    info!("Queried {} and wrote CSV file", currency_list);
-    
     Ok(())
+}
+
+async fn update_google_sheet(
+    secret_path: &str,
+    values: ValueRange,
+) {
+    let authenticator = yup_oauth2::ServiceAccountAuthenticator::builder(
+        read_service_account_key(secret_path).await.unwrap(),
+    )
+    .build()
+    .await
+    .expect("failed to create authenticator");
+
+    let hub = Sheets::new(
+        hyper::Client::builder().build(hyper_rustls::HttpsConnector::with_native_roots()),
+        authenticator,
+    );
+
+    let range = values.clone().range.unwrap();
+    let result = hub
+         .spreadsheets()
+         .values_update(values.clone(), &SHEET_ID, &values.range.unwrap())
+         .value_input_option("USER_ENTERED")
+         .doit()
+         .await;
+
+     match result {
+         Err(e) => match e {
+             // The Error enum provides details about what exactly happened.
+             // You can also just use its `Debug`, `Display` or `Error` traits
+             Error::HttpError(_)
+             | Error::Io(_)
+             | Error::MissingAPIKey
+             | Error::MissingToken(_)
+             | Error::Cancelled
+             | Error::UploadSizeLimitExceeded(_, _)
+             | Error::Failure(_)
+             | Error::BadRequest(_)
+             | Error::FieldClash(_)
+             | Error::JsonDecodeError(_, _) => eprintln!("{}", e),
+         },
+         Ok((_, _)) => info!(
+             "{} Updated range: {}",
+             chrono::offset::Utc::now(),
+             range
+         ),
+     }
 }
