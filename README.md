@@ -126,4 +126,3 @@ This is done mostly locally.
 You need to add a ssl dependency to `Cargo.toml`, and depending on your OS, install other third party packages. The error message is quite helpful.
 
 [Solution in branch step_12](https://git.sr.ht/~gruberb/onetutorial/commit/step_12)
->>>>>>> Stashed changes
