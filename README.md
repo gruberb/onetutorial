@@ -119,8 +119,8 @@ This step is done in the browser.
 This is done mostly locally. 
 
 ```
-> cargo target add x86_64-unknown-linux-musl
-> cargo run --target=x86_64-unknown-linux-musl
+> rustup target add x86_64-unknown-linux-musl
+> cargo build --release --target=x86_64-unknown-linux-musl
 ```
 
 You need to add a ssl dependency to `Cargo.toml`, and depending on your OS, install other third party packages. The error message is quite helpful.
