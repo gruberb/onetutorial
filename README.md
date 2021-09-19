@@ -96,7 +96,7 @@ Depending on which external APIs you are going to use, you need to create API ke
 
 ### Step 7 - Logging
 
-[Solution in branch step_7](https://git.sr.ht/~gruberb/onetutorial/commit/step_7)
+[Solution in branch step_7](https://git.sr.ht/~gruberb/onetutorial/commit/e5fcab808e3864acb6f6f6a5abaa615ecd2a5441)
 
 ### Step 8 - Fetch ETF from different API
 
