@@ -66,3 +66,64 @@ Depending on which external APIs you are going to use, you need to create API ke
 11. Move out your business logic in different modules.
 12. Build your Rust code and move the binary to a server and run it from there.
 13. Send out an E-Mail with the coin and ETF overview and redeploy your application/binary.
+
+## Solutions
+
+### Step 1 - Send HTTP request
+
+[Solution in branch step_1](https://git.sr.ht/~gruberb/onetutorial/commit/step_1)
+
+
+### Step 2 - Send paramterised HTTP GET to CMC
+
+[Solution in branch step_2](https://git.sr.ht/~gruberb/onetutorial/commit/step_2)
+
+### Step 3 - Read API key from .env instead of hardcoded
+
+[Solution in branch step_3](https://git.sr.ht/~gruberb/onetutorial/commit/step_3)
+
+### Step 4 - Store result in custom struct 
+
+[Solution in branch step_4](https://git.sr.ht/~gruberb/onetutorial/commit/step_4)
+
+### Step 5 - Pass list of currencies via CLI 
+
+[Solution in branch step_5](https://git.sr.ht/~gruberb/onetutorial/commit/step_5)
+
+### Step 6 - Save results in CSV file
+
+[Solution in branch step_6](https://git.sr.ht/~gruberb/onetutorial/commit/step_6)
+
+### Step 7 - Logging
+
+[Solution in branch step_7](https://git.sr.ht/~gruberb/onetutorial/commit/step_7)
+
+### Step 8 - Fetch ETF from different API
+
+[Solution in branch step_8](https://git.sr.ht/~gruberb/onetutorial/commit/step_8)
+
+### Step 9 - Prepare Google Sheets
+
+This step is done in the browser. 
+
+### Step 10 - Adding GoogleSheets library
+
+[Solution in branch step_10](https://git.sr.ht/~gruberb/onetutorial/commit/step_10)
+
+### Step 11 - Move logic in modules
+
+[Solution in branch step_11](https://git.sr.ht/~gruberb/onetutorial/commit/step_11)
+
+### Step 12 - Cross-compile your code via musl
+
+This is done mostly locally. 
+
+```
+> cargo target add x86_64-unknown-linux-musl
+> cargo run --target=x86_64-unknown-linux-musl
+```
+
+You need to add a ssl dependency to `Cargo.toml`, and depending on your OS, install other third party packages. The error message is quite helpful.
+
+[Solution in branch step_12](https://git.sr.ht/~gruberb/onetutorial/commit/step_12)
+>>>>>>> Stashed changes
