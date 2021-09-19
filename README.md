@@ -94,7 +94,7 @@ Depending on which external APIs you are going to use, you need to create API ke
 
 [Solution in branch step_6](https://git.sr.ht/~gruberb/onetutorial/commit/step_6)
 
-### Step 7 - Logging
+### Step 7 - Logging and Error handling
 
 [Solution in branch step_7](https://git.sr.ht/~gruberb/onetutorial/commit/e5fcab808e3864acb6f6f6a5abaa615ecd2a5441)
 
