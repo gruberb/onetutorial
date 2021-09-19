@@ -1,7 +1,5 @@
 use std::collections::HashMap;
-use std::fmt;
 
-use serde::{Serialize, Deserialize};
 use clap::{Arg, App};
 use log::{error, info, debug};
 use log4rs;
@@ -16,83 +14,13 @@ use yup_oauth2::read_service_account_key;
 #[macro_use]
 extern crate lazy_static;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct EODResponse {
-    code: String,
-    close: f64,
-}
+mod cmc;
+mod eod;
+mod error;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct CMCResponse {
-    data: HashMap<String, Currency>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Currency {
-    name: String,
-    symbol: String,
-    quote: Quotes,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Quotes(HashMap<String, Quote>);
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Quote {
-    price: f64,
-    percent_change_7d: f64,
-}
-
-#[derive(Debug)]
-enum OneError {
-    NoAPIKey,
-    CSV(csv::Error),
-    IO(std::io::Error),
-    Reqwest(reqwest::Error),
-}
-
-impl std::error::Error for OneError {}
-
-
-impl fmt::Display for OneError {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    match self {
-      OneError::NoAPIKey => write!(f, "No API key is set via the .env variable."),
-      OneError::CSV(err) => write!(f, "Error while writing the CSV file {}", err),
-      OneError::IO(err) => write!(f, "Error while flushing the file {}", err),
-      OneError::Reqwest(err) => write!(f, "Error while fetching data {}", err),
-    }
-  }
-}
-
-impl From<reqwest::Error> for OneError {
-    fn from(err: reqwest::Error) -> OneError {
-        OneError::Reqwest(err)
-    }
-}
-
-impl From<csv::Error> for OneError {
-    fn from(err: csv::Error) -> OneError {
-        OneError::CSV(err)
-    }
-}
-
-impl From<std::io::Error> for OneError {
-    fn from(err: std::io::Error) -> OneError {
-        OneError::IO(err)
-    }
-}
-
-impl fmt::Display for Currency {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Name: {}, Symbol: {} Price: {} Change(7d): {}%", 
-            self.name, 
-            self.symbol, 
-            self.quote.0.get("USD").unwrap().price.to_string(), 
-            self.quote.0.get("USD").unwrap().percent_change_7d.to_string()
-        )
-    }
-}
+use cmc::CMCResponse;
+use eod::EODResponse;
+use error::OneError;
 
 lazy_static! {
     static ref SHEET_ID: &'static str = "1JuF7MpFIkZSixwnmuvgH5KN5iPzcH9Xd05hTL0glya0";
