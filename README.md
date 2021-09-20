@@ -126,3 +126,9 @@ This is done mostly locally.
 You need to add a ssl dependency to `Cargo.toml`, and depending on your OS, install other third party packages. The error message is quite helpful.
 
 [Solution in branch step_12](https://git.sr.ht/~gruberb/onetutorial/commit/step_12)
+
+### Step 13 - Send out E-Mail
+
+For this, I overcomplicated things a bit to show some nice features of Rust. We can have different types in Rust. And instead of the "EMail-Type" knowing too much how to display information, we let the types themselves decide how to "display" their information in a HTML way. For this, we require types passed down to an E-Mail implement the HTML trait. Later on, we can have a `Vec` of Generics, and the "send_email" function has the trait bound to require the types to implement this trait. 
+
+[Solution in branch step_13](https://git.sr.ht/~gruberb/onetutorial/commit/step_13)
