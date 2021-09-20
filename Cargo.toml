@@ -22,3 +22,4 @@ hyper-rustls = "^0.22"
 yup-oauth2 = "^5.0"
 chrono = "0.4"
 openssl = { version = "0.10.32", features = ["vendored"] }
+sendmail = "2.0.0"

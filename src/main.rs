@@ -1,26 +1,31 @@
 use std::collections::HashMap;
 
+use log::{debug, info, error};
 use clap::{Arg, App};
-use log::{error, info, debug};
 use log4rs;
 
 extern crate google_sheets4 as sheets4;
 extern crate yup_oauth2 as oauth2;
 use sheets4::api::ValueRange;
-use sheets4::Error;
-use sheets4::Sheets;
-use yup_oauth2::read_service_account_key;
 
 #[macro_use]
 extern crate lazy_static;
 
 mod cmc;
+mod coins;
+mod email;
 mod eod;
 mod error;
+mod etfs;
+mod spreadsheet;
 
 use cmc::CMCResponse;
+use coins::Coins;
 use eod::EODResponse;
 use error::OneError;
+use etfs::ETFs;
+use email::{EMail, HTML};
+use spreadsheet::Spreadsheet;
 
 lazy_static! {
     static ref SHEET_ID: &'static str = "1JuF7MpFIkZSixwnmuvgH5KN5iPzcH9Xd05hTL0glya0";
@@ -101,55 +106,28 @@ async fn main() -> Result<(), OneError> {
         ]])
     };
 
-    update_google_sheet(&SECRET_PATH, coins).await;
-    update_google_sheet(&SECRET_PATH, etfs).await;
-   
+    let mut sheet = Spreadsheet::new(&SHEET_ID, &SECRET_PATH);
+
+    sheet.update_sheet(coins).await;
+    sheet.update_sheet(etfs).await;
+
+    sheet.fetch_latest_values().await;
+
+    let coins = Coins::new(sheet.get_values("CRYPTO_TOKEN_PRICES"));
+    let etfs = ETFs::new(sheet.get_values("ETF"));
+    
+    let mut components: Vec<&dyn HTML> = Vec::new();
+
+    components.push(&coins);
+    components.push(&etfs);
+
+    let email = EMail::new(components);
+
+    match email.send() {
+        Ok(_) => info!("{} E-Mail sent", chrono::offset::Utc::now()),
+        Err(e) => error!("Error sending E-Mail {}", e)
+    }
+
     Ok(())
 }
 
-async fn update_google_sheet(
-    secret_path: &str,
-    values: ValueRange,
-) {
-    let authenticator = yup_oauth2::ServiceAccountAuthenticator::builder(
-        read_service_account_key(secret_path).await.unwrap(),
-    )
-    .build()
-    .await
-    .expect("failed to create authenticator");
-
-    let hub = Sheets::new(
-        hyper::Client::builder().build(hyper_rustls::HttpsConnector::with_native_roots()),
-        authenticator,
-    );
-
-    let range = values.clone().range.unwrap();
-    let result = hub
-         .spreadsheets()
-         .values_update(values.clone(), &SHEET_ID, &values.range.unwrap())
-         .value_input_option("USER_ENTERED")
-         .doit()
-         .await;
-
-     match result {
-         Err(e) => match e {
-             // The Error enum provides details about what exactly happened.
-             // You can also just use its `Debug`, `Display` or `Error` traits
-             Error::HttpError(_)
-             | Error::Io(_)
-             | Error::MissingAPIKey
-             | Error::MissingToken(_)
-             | Error::Cancelled
-             | Error::UploadSizeLimitExceeded(_, _)
-             | Error::Failure(_)
-             | Error::BadRequest(_)
-             | Error::FieldClash(_)
-             | Error::JsonDecodeError(_, _) => eprintln!("{}", e),
-         },
-         Ok((_, _)) => info!(
-             "{} Updated range: {}",
-             chrono::offset::Utc::now(),
-             range
-         ),
-     }
-}
