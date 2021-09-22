@@ -50,9 +50,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     .version("1.0")
     .author("Bastian G. <code@recv.online>")
     .about("Learn Rust in one go")
-    .arg(Arg::new("currency_list")
+    .arg(Arg::with_name("currency_list")
         .long("currencies")
-        .about("Pass the list of currencies you want to query")
+        .help("Pass the list of currencies you want to query")
         .min_values(1)
         .required(true))
     .get_matches();
