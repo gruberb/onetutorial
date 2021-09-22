@@ -58,11 +58,77 @@ Depending on which external APIs you are going to use, you need to create API ke
 3. Read the API key from an .env file.
 4. Get the name, symbol, price and 7day of the BTC and store it in a struct.
 5. Pass the list of currencies to fetch via the CLI. 
-5. Instead of printing the JSON result, store the result in a Vec of currencies.
 6. Save the result in a CSV file.
 7. In case the API returns an error, write it out to a log file and abort the application.
 8. In addition to the coin prices, fetch the price of a random ETF and store it also in a struct.
 9. Add a rows in your Google Sheet with ISN, amount of coins, price, total and a row with the total value of your portfolio.
 10. Instead of saving the result to a CSV, update your Google sheet.
-11. Build your Rust code and move the binary to a server and run it from there.
-12. Send out an E-Mail with the coin and ETF overview and redeploy your application/binary.
+11. Move out your business logic in different modules.
+12. Build your Rust code and move the binary to a server and run it from there.
+13. Send out an E-Mail with the coin and ETF overview and redeploy your application/binary.
+
+## Solutions
+
+### Step 1 - Send HTTP request
+
+[Solution in branch step_1](https://git.sr.ht/~gruberb/onetutorial/commit/step_1)
+
+
+### Step 2 - Send paramterised HTTP GET to CMC
+
+[Solution in branch step_2](https://git.sr.ht/~gruberb/onetutorial/commit/step_2)
+
+### Step 3 - Read API key from .env instead of hardcoded
+
+[Solution in branch step_3](https://git.sr.ht/~gruberb/onetutorial/commit/step_3)
+
+### Step 4 - Store result in custom struct 
+
+[Solution in branch step_4](https://git.sr.ht/~gruberb/onetutorial/commit/step_4)
+
+### Step 5 - Pass list of currencies via CLI 
+
+[Solution in branch step_5](https://git.sr.ht/~gruberb/onetutorial/commit/step_5)
+
+### Step 6 - Save results in CSV file
+
+[Solution in branch step_6](https://git.sr.ht/~gruberb/onetutorial/commit/step_6)
+
+### Step 7 - Logging and Error handling
+
+[Solution in branch step_7](https://git.sr.ht/~gruberb/onetutorial/commit/e5fcab808e3864acb6f6f6a5abaa615ecd2a5441)
+
+### Step 8 - Fetch ETF from different API
+
+[Solution in branch step_8](https://git.sr.ht/~gruberb/onetutorial/commit/step_8)
+
+### Step 9 - Prepare Google Sheets
+
+This step is done in the browser. 
+
+### Step 10 - Adding GoogleSheets library
+
+[Solution in branch step_10](https://git.sr.ht/~gruberb/onetutorial/commit/step_10)
+
+### Step 11 - Move logic in modules
+
+[Solution in branch step_11](https://git.sr.ht/~gruberb/onetutorial/commit/step_11)
+
+### Step 12 - Cross-compile your code via musl
+
+This is done mostly locally. 
+
+```
+> rustup target add x86_64-unknown-linux-musl
+> cargo build --release --target=x86_64-unknown-linux-musl
+```
+
+You need to add a ssl dependency to `Cargo.toml`, and depending on your OS, install other third party packages. The error message is quite helpful.
+
+[Solution in branch step_12](https://git.sr.ht/~gruberb/onetutorial/commit/step_12)
+
+### Step 13 - Send out E-Mail
+
+For this, I overcomplicated things a bit to show some nice features of Rust. We can have different types in Rust. And instead of the "EMail-Type" knowing too much how to display information, we let the types themselves decide how to "display" their information in a HTML way. For this, we require types passed down to an E-Mail implement the HTML trait. Later on, we can have a `Vec` of Generics, and the "send_email" function has the trait bound to require the types to implement this trait. 
+
+[Solution in branch step_13](https://git.sr.ht/~gruberb/onetutorial/commit/step_13)
