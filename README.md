@@ -71,36 +71,36 @@ Depending on which external APIs you are going to use, you need to create API ke
 
 ### Step 1 - Send HTTP request
 
-[Solution in branch step_1](https://git.sr.ht/~gruberb/onetutorial/commit/step_1)
+[Solution in branch step_1](https://github.com/gruberb/onetutorial/tree/step_1)
 
 
 ### Step 2 - Send paramterised HTTP GET to CMC
 
-[Solution in branch step_2](https://git.sr.ht/~gruberb/onetutorial/commit/step_2)
+[Solution in branch step_2](https://github.com/gruberb/onetutorial/tree/step_2)
 
 ### Step 3 - Read API key from .env instead of hardcoded
 
-[Solution in branch step_3](https://git.sr.ht/~gruberb/onetutorial/commit/step_3)
+[Solution in branch step_3](https://github.com/gruberb/onetutorial/tree/step_3)
 
 ### Step 4 - Store result in custom struct 
 
-[Solution in branch step_4](https://git.sr.ht/~gruberb/onetutorial/commit/step_4)
+[Solution in branch step_4](https://github.com/gruberb/onetutorial/tree/step_4)
 
 ### Step 5 - Pass list of currencies via CLI 
 
-[Solution in branch step_5](https://git.sr.ht/~gruberb/onetutorial/commit/step_5)
+[Solution in branch step_5](https://github.com/gruberb/onetutorial/tree/step_5)
 
 ### Step 6 - Save results in CSV file
 
-[Solution in branch step_6](https://git.sr.ht/~gruberb/onetutorial/commit/step_6)
+[Solution in branch step_6](https://github.com/gruberb/onetutorial/tree/step_6)
 
 ### Step 7 - Logging and Error handling
 
-[Solution in branch step_7](https://git.sr.ht/~gruberb/onetutorial/commit/e5fcab808e3864acb6f6f6a5abaa615ecd2a5441)
+[Solution in branch step_7](https://github.com/gruberb/onetutorial/commit/e5fcab808e3864acb6f6f6a5abaa615ecd2a5441)
 
 ### Step 8 - Fetch ETF from different API
 
-[Solution in branch step_8](https://git.sr.ht/~gruberb/onetutorial/commit/step_8)
+[Solution in branch step_8](https://github.com/gruberb/onetutorial/commit/21313577a2636e3703862d7fccc4d86458da809c)
 
 ### Step 9 - Prepare Google Sheets
 
@@ -108,11 +108,11 @@ This step is done in the browser.
 
 ### Step 10 - Adding GoogleSheets library
 
-[Solution in branch step_10](https://git.sr.ht/~gruberb/onetutorial/commit/step_10)
+[Solution in branch step_10](https://github.com/gruberb/onetutorial/commit/7326cd4acbade212a38a8a15daaa3f9a8b601fbb)
 
 ### Step 11 - Move logic in modules
 
-[Solution in branch step_11](https://git.sr.ht/~gruberb/onetutorial/commit/step_11)
+[Solution in branch step_11](https://github.com/gruberb/onetutorial/commit/8298723fb6830df2f17cee25d28580255042ff03)
 
 ### Step 12 - Cross-compile your code via musl
 
@@ -125,10 +125,10 @@ This is done mostly locally.
 
 You need to add a ssl dependency to `Cargo.toml`, and depending on your OS, install other third party packages. The error message is quite helpful.
 
-[Solution in branch step_12](https://git.sr.ht/~gruberb/onetutorial/commit/step_12)
+[Solution in branch step_12](https://github.com/gruberb/onetutorial/commit/80423912d2e06389d916626818ebc80574a3985e)
 
 ### Step 13 - Send out E-Mail
 
 For this, I overcomplicated things a bit to show some nice features of Rust. We can have different types in Rust. And instead of the "EMail-Type" knowing too much how to display information, we let the types themselves decide how to "display" their information in a HTML way. For this, we require types passed down to an E-Mail implement the HTML trait. Later on, we can have a `Vec` of Generics, and the "send_email" function has the trait bound to require the types to implement this trait. 
 
-[Solution in branch step_13](https://git.sr.ht/~gruberb/onetutorial/commit/step_13)
+[Solution in branch step_13](https://github.com/gruberb/onetutorial/commit/84e882e54a7e6129f5bedea6c3fd2d4e2dc2d757)
